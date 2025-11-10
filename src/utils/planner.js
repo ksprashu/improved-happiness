@@ -1,4 +1,4 @@
-import { knowledgeBase } from "../data/knowledgeBase.js";
+import { knowledgeBase, focusOptions } from "../data/knowledgeBase.js";
 import { getRecentLogs } from "../state.js";
 
 const patternAliases = {
@@ -57,7 +57,7 @@ function patternCompatible(exercise, pattern, equipmentSet) {
   return exercise.pattern === patternAliases[pattern] || exercise.pattern === pattern;
 }
 
-function scoreExercise(exercise, { readiness, goals, avoidPatterns, soreness }) {
+function scoreExercise(exercise, { readiness, goals, avoidPatterns, soreness, focusTargets }) {
   let score = 0;
   if (goals.includes("strength") && ["hinge", "push", "pull", "squat"].includes(exercise.pattern)) score += 2;
   if (goals.includes("fat_burn") && ["hinge", "squat", "rotate"].includes(exercise.pattern)) score += 2;
@@ -69,6 +69,13 @@ function scoreExercise(exercise, { readiness, goals, avoidPatterns, soreness }) 
 
   if (avoidPatterns.has(exercise.pattern)) score -= 4;
   if (soreness.has(exercise.pattern)) score -= 3;
+
+  if (focusTargets?.length) {
+    focusTargets.forEach((focus) => {
+      if (focus.tools?.includes(exercise.tool)) score += 3;
+      if (focus.patterns?.includes(exercise.pattern)) score += 2;
+    });
+  }
 
   return score + Math.random() * 0.4;
 }
@@ -93,6 +100,7 @@ export function generateSession(planner) {
   const recentLogs = getRecentLogs(48);
   const { avoidSet, counts } = buildAvoidPatterns(recentLogs);
   const soreness = new Set(planner.soreness || []);
+  const focusTargets = focusOptions.filter((focus) => (planner.focus || []).includes(focus.id));
 
   const exercises = [];
   const warnings = [];
@@ -111,13 +119,15 @@ export function generateSession(planner) {
           readiness: planner.readiness,
           goals: planner.goals,
           avoidPatterns: avoidSet,
-          soreness
+          soreness,
+          focusTargets
         }) -
         scoreExercise(a, {
           readiness: planner.readiness,
           goals: planner.goals,
           avoidPatterns: avoidSet,
-          soreness
+          soreness,
+          focusTargets
         })
     );
     const chosen = candidates[0];

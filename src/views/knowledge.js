@@ -1,42 +1,23 @@
-import { knowledgeBase, plannerTips } from "../data/knowledgeBase.js";
+import { knowledgeBase, plannerTips, focusOptions } from "../data/knowledgeBase.js";
 import { dayPicker, weeklyFlow } from "../data/samplePlan.js";
 
 export function renderKnowledge() {
-  const container = document.createElement("div");
-  container.appendChild(createHeader());
+  const fragment = document.createDocumentFragment();
 
-  const main = document.createElement("div");
-  main.className = "main-content";
+  fragment.appendChild(renderOverview());
+  fragment.appendChild(renderFocusThemes());
+  fragment.appendChild(renderEquipment());
+  fragment.appendChild(renderMovementLibrary());
+  fragment.appendChild(renderBreathwork());
+  fragment.appendChild(renderDayPicker());
 
-  main.appendChild(renderEthos());
-  main.appendChild(renderEquipment());
-  main.appendChild(renderMovementLibrary());
-  main.appendChild(renderBreathwork());
-  main.appendChild(renderDayPicker());
-
-  container.appendChild(main);
-  return container;
+  return fragment;
 }
 
-function createHeader() {
-  const header = document.createElement("header");
-  header.className = "app-header";
-  header.innerHTML = `<h1>Knowledge base</h1><p>Rooted in Indian clubs, breath, and modern strength.</p>`;
-  return header;
-}
-
-function renderEthos() {
+function renderOverview() {
   const section = document.createElement("section");
-  section.className = "section";
-  section.innerHTML = `<h2>Core ethos</h2>`;
-
-  const pillars = document.createElement("ul");
-  knowledgeBase.ethos.pillars.forEach((pillar) => {
-    const li = document.createElement("li");
-    li.textContent = pillar;
-    pillars.appendChild(li);
-  });
-  section.appendChild(pillars);
+  section.className = "section highlight";
+  section.innerHTML = `<h2>ShaktiFlow playbook</h2><p>Core principles, cues, and plans that shape every session.</p>`;
 
   const cues = document.createElement("div");
   cues.className = "chip-group";
@@ -47,6 +28,24 @@ function renderEthos() {
     cues.appendChild(chip);
   });
   section.appendChild(cues);
+
+  return section;
+}
+
+function renderFocusThemes() {
+  const section = document.createElement("section");
+  section.className = "section";
+  section.innerHTML = `<h2>Focus themes</h2>`;
+
+  const list = document.createElement("ul");
+  list.className = "list";
+  focusOptions.forEach((focus) => {
+    const li = document.createElement("li");
+    li.innerHTML = `<strong>${focus.label}</strong><br/><span>${focus.description}</span>`;
+    list.appendChild(li);
+  });
+  section.appendChild(list);
+
   return section;
 }
 
@@ -99,7 +98,7 @@ function renderMovementLibrary() {
     const filtered = knowledgeBase.exercises.filter((exercise) => pattern === "all" || exercise.pattern === pattern);
     filtered.forEach((exercise) => {
       const li = document.createElement("li");
-      li.innerHTML = `<strong>${exercise.name}</strong><br/><span>Pattern: ${exercise.pattern}</span><br/><span>Cues: ${exercise.cues}</span>`;
+      li.innerHTML = `<strong>${exercise.name}</strong><br/><span>${exercise.description}</span><br/><span class="text-muted small">Pattern: ${exercise.pattern} · Tool: ${exercise.tool}</span>`;
       list.appendChild(li);
     });
   }
@@ -107,14 +106,19 @@ function renderMovementLibrary() {
   patterns.forEach((pattern) => {
     const chip = document.createElement("button");
     chip.type = "button";
-    chip.className = "chip";
+    chip.className = "chip toggle";
     chip.textContent = pattern === "all" ? "All" : pattern;
     chip.setAttribute("aria-pressed", pattern === active);
+    chip.classList.toggle("active", pattern === active);
     chip.addEventListener("click", () => {
       active = pattern;
       renderList(active);
-      Array.from(filters.children).forEach((child) => child.setAttribute("aria-pressed", "false"));
+      Array.from(filters.children).forEach((child) => {
+        child.setAttribute("aria-pressed", "false");
+        child.classList.remove("active");
+      });
       chip.setAttribute("aria-pressed", "true");
+      chip.classList.add("active");
     });
     filters.appendChild(chip);
   });
@@ -135,7 +139,7 @@ function renderBreathwork() {
   list.className = "list";
   knowledgeBase.breathwork.forEach((item) => {
     const li = document.createElement("li");
-    li.innerHTML = `<strong>${item.label}</strong> — ${item.duration} · ${item.effect}`;
+    li.innerHTML = `<strong>${item.label}</strong> — ${item.how || item.effect}`;
     list.appendChild(li);
   });
   section.appendChild(list);

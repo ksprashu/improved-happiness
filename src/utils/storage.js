@@ -1,4 +1,4 @@
-const STORAGE_KEY = "ai-club-coach-state-v1";
+const STORAGE_KEY = "shaktiflow-state-v1";
 
 export function loadState() {
   if (typeof localStorage === "undefined") return null;

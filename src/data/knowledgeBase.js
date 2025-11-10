@@ -28,6 +28,7 @@ export const knowledgeBase = {
     {
       id: "GADA-360",
       name: "Gada 360°",
+      description: "Sweep the gada around the head with a smooth circle, driving the bell from hips and lats.",
       tool: "gada",
       pattern: "rotate",
       primary: ["lats", "glutes", "obliques"],
@@ -39,6 +40,7 @@ export const knowledgeBase = {
     {
       id: "GADA-10TO2",
       name: "Gada 10-to-2",
+      description: "Pendulum the mace between 10 and 2 on the clock, snapping the hips to redirect the swing.",
       tool: "gada",
       pattern: "hinge",
       primary: ["posterior_chain"],
@@ -49,6 +51,7 @@ export const knowledgeBase = {
     {
       id: "GADA-FRONT-SWING",
       name: "Gada Front Swing",
+      description: "Press the mace forward from the chest while bracing the core to resist overextension.",
       tool: "gada",
       pattern: "anti_extension",
       primary: ["core", "shoulders"],
@@ -59,6 +62,7 @@ export const knowledgeBase = {
     {
       id: "MUD-MILL-SINGLE",
       name: "Mudgar Mill (Single)",
+      description: "Circle the mudgar around the head with one hand, keeping elbows close and the arc controlled.",
       tool: "mudgar",
       pattern: "rotate",
       primary: ["obliques", "forearms", "rotator_cuff"],
@@ -69,6 +73,7 @@ export const knowledgeBase = {
     {
       id: "MUD-FRONT-SWING-SINGLE",
       name: "Mudgar Front Swing",
+      description: "Swing the club forward and back while locking the hips square to train anti-rotation strength.",
       tool: "mudgar",
       pattern: "anti_rotation",
       primary: ["core", "delts"],
@@ -77,6 +82,7 @@ export const knowledgeBase = {
     {
       id: "MUD-HALO-SINGLE",
       name: "Mudgar Halo",
+      description: "Guide the club around the head slowly to open shoulders and prime rotational mobility.",
       tool: "mudgar",
       pattern: "mobility",
       primary: ["shoulder_capsule"],
@@ -85,6 +91,7 @@ export const knowledgeBase = {
     {
       id: "MUD-MILL-TWOHAND",
       name: "Mudgar Mill (Two-Hand)",
+      description: "Use both hands to orbit a heavier mudgar for powerful rotational strength and coordination.",
       tool: "mudgar",
       pattern: "rotate",
       primary: ["lats", "delts", "core"],
@@ -93,6 +100,7 @@ export const knowledgeBase = {
     {
       id: "BW-BAITHAK",
       name: "Baithak (Hindu Squat)",
+      description: "Roll onto the toes and drop into a rhythmic squat, syncing breath with each flowing rep.",
       tool: "bodyweight",
       pattern: "squat",
       primary: ["quads", "glutes"],
@@ -101,6 +109,7 @@ export const knowledgeBase = {
     {
       id: "BW-DAND",
       name: "Dand (Indian Push-up)",
+      description: "Flow from downward dog into a sweeping push-up, arching and waving through the spine.",
       tool: "bodyweight",
       pattern: "push",
       primary: ["chest", "triceps", "lats"],
@@ -109,6 +118,7 @@ export const knowledgeBase = {
     {
       id: "DB-ROW",
       name: "Dumbbell Row",
+      description: "Hinge at the hips, brace the core, and draw the bell toward the ribs with a strong squeeze.",
       tool: "dumbbell",
       pattern: "pull",
       primary: ["lats", "rear_delts"],
@@ -117,6 +127,7 @@ export const knowledgeBase = {
     {
       id: "DB-FLOOR-PRESS",
       name: "Dumbbell Floor Press",
+      description: "Lie on the floor and press bells from a packed shoulder position with controlled tempo.",
       tool: "dumbbell",
       pattern: "push",
       primary: ["pecs", "triceps"],
@@ -125,6 +136,7 @@ export const knowledgeBase = {
     {
       id: "DB-GOBLET-SQUAT",
       name: "Goblet Squat",
+      description: "Hold the weight at the chest and sit between the hips, keeping the torso tall and heels grounded.",
       tool: "dumbbell",
       pattern: "squat",
       primary: ["quads", "glutes"],
@@ -133,6 +145,7 @@ export const knowledgeBase = {
     {
       id: "KB-SWING",
       name: "Kettlebell Swing",
+      description: "Explosively hinge and snap the hips to float the bell to chest height with relaxed arms.",
       tool: "kettlebell",
       pattern: "hinge",
       primary: ["glutes", "hamstrings"],
@@ -141,6 +154,7 @@ export const knowledgeBase = {
     {
       id: "PALLOF-PRESS",
       name: "Pallof Press",
+      description: "Press the band straight out from the chest while bracing to resist the sideways pull.",
       tool: "band",
       pattern: "anti_rotation",
       primary: ["core"],
@@ -149,6 +163,7 @@ export const knowledgeBase = {
     {
       id: "BAND-ROW",
       name: "Band Row",
+      description: "Anchor the band and draw elbows back to the ribs, squeezing shoulder blades together.",
       tool: "band",
       pattern: "pull",
       primary: ["mid_back"],
@@ -157,6 +172,7 @@ export const knowledgeBase = {
     {
       id: "PLANK",
       name: "Plank",
+      description: "Hold a long line from head to heels, pressing the floor away and breathing through the nose.",
       tool: "bodyweight",
       pattern: "anti_extension",
       primary: ["core"],
@@ -165,6 +181,7 @@ export const knowledgeBase = {
     {
       id: "SURYA-NAMASKAR",
       name: "Surya Namaskar",
+      description: "Link a sun salutation sequence of folds, planks, and lunges with steady inhales and exhales.",
       tool: "yoga",
       pattern: "mobility",
       primary: ["full_body"],
@@ -173,6 +190,7 @@ export const knowledgeBase = {
     {
       id: "BOX-BREATHING",
       name: "Box Breathing 4-4-4-4",
+      description: "Match inhaling, holding, exhaling, and holding for four counts to calm the nervous system.",
       tool: "breath",
       pattern: "recovery",
       primary: ["nervous_system"],
@@ -203,11 +221,41 @@ export const knowledgeBase = {
     }
   },
   breathwork: [
-    { id: "BHASTRIKA", label: "Bhastrika", duration: "1-2 min", effect: "Fat oxidation + energy" },
-    { id: "KAPALABHATI", label: "Kapalabhati", duration: "1 min", effect: "Core activation" },
-    { id: "ANULOM-VILOM", label: "Anulom Vilom", duration: "3-5 min", effect: "Hormonal balance" },
-    { id: "BHRAMARI", label: "Bhramari", duration: "1-2 min", effect: "Stress downshift" },
-    { id: "BOX-BREATHING", label: "Box Breathing 4-4-4-4", duration: "3-5 min", effect: "Cortisol modulation" }
+    {
+      id: "BHASTRIKA",
+      label: "Bhastrika",
+      duration: "1-2 min",
+      effect: "Fat oxidation + energy",
+      how: "Sit tall and pump the breath with forceful nasal inhales and exhales like bellows."
+    },
+    {
+      id: "KAPALABHATI",
+      label: "Kapalabhati",
+      duration: "1 min",
+      effect: "Core activation",
+      how: "Snap the belly back on sharp nasal exhales, letting inhales happen softly between pulses."
+    },
+    {
+      id: "ANULOM-VILOM",
+      label: "Anulom Vilom",
+      duration: "3-5 min",
+      effect: "Hormonal balance",
+      how: "Alternate nostrils with a gentle finger seal, inhaling and exhaling evenly side to side."
+    },
+    {
+      id: "BHRAMARI",
+      label: "Bhramari",
+      duration: "1-2 min",
+      effect: "Stress downshift",
+      how: "Close the eyes, inhale softly, then hum on the exhale to create a soothing vibration."
+    },
+    {
+      id: "BOX-BREATHING",
+      label: "Box Breathing 4-4-4-4",
+      duration: "3-5 min",
+      effect: "Cortisol modulation",
+      how: "Inhale, hold, exhale, and hold for even four-counts to settle the nervous system."
+    }
   ],
   contraindications: {
     shoulder_pain: ["GADA-HALO-PAUSE", "MUD-HALO-TWOHAND", "BAND-ROW"],
@@ -255,6 +303,44 @@ export const equipmentOptions = [
   { id: "dumbbell", label: "Dumbbells" },
   { id: "band", label: "Resistance Bands" },
   { id: "breath", label: "Breathwork" }
+];
+
+export const focusOptions = [
+  {
+    id: "gada",
+    label: "Gada Flow",
+    description: "Rotational mace swings, 10-to-2s, and anti-extension presses for warrior flow.",
+    tools: ["gada"],
+    patterns: ["rotate", "hinge", "anti_extension"]
+  },
+  {
+    id: "mudgar",
+    label: "Mudgar Strength",
+    description: "Single and double club mills to groove rotational power and shoulder resilience.",
+    tools: ["mudgar"],
+    patterns: ["rotate", "anti_rotation", "mobility"]
+  },
+  {
+    id: "kettlebell",
+    label: "Kettlebell Power",
+    description: "Explosive swings, squats, and presses to build posterior-chain drive.",
+    tools: ["kettlebell"],
+    patterns: ["hinge", "squat", "push"]
+  },
+  {
+    id: "bodyweight",
+    label: "Bodyweight Conditioning",
+    description: "Dands, baithaks, planks, and band work for high-repeatable conditioning.",
+    tools: ["bodyweight", "band"],
+    patterns: ["push", "pull", "squat", "anti_rotation", "anti_extension"]
+  },
+  {
+    id: "yoga",
+    label: "Yoga & Breath",
+    description: "Surya namaskar flows, pranayama, and mobility resets for restoration.",
+    tools: ["yoga", "breath"],
+    patterns: ["mobility", "recovery"]
+  }
 ];
 
 export const plannerTips = [

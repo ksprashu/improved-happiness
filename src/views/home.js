@@ -1,116 +1,282 @@
-import { computeStreak } from "../state.js";
-import { plannerTips, knowledgeBase } from "../data/knowledgeBase.js";
+import {
+  computeStreak,
+  setView,
+  updatePlanner,
+  setGeneratedSession,
+  getState,
+  prepareLogDraft
+} from "../state.js";
+import { plannerTips, knowledgeBase, equipmentOptions, focusOptions } from "../data/knowledgeBase.js";
 import { formatDateTime } from "../utils/date.js";
-import { setView } from "../state.js";
+import { generateSession } from "../utils/planner.js";
+
+const DURATION_OPTIONS = [15, 25, 35, 45];
 
 export function renderHome(state) {
-  const container = document.createElement("div");
+  const fragment = document.createDocumentFragment();
 
-  container.appendChild(renderHeader());
+  fragment.appendChild(renderQuickSession(state));
+  fragment.appendChild(renderMomentum(state));
+  fragment.appendChild(renderEthos());
+  fragment.appendChild(renderTips());
 
-  const content = document.createElement("div");
-  content.className = "main-content";
-
-  content.appendChild(renderTodayCard(state));
-  content.appendChild(renderStreak(state));
-  content.appendChild(renderEthos());
-  content.appendChild(renderTips());
-
-  container.appendChild(content);
-
-  return container;
+  return fragment;
 }
 
-function renderHeader() {
-  const header = document.createElement("header");
-  header.className = "app-header";
-  const title = document.createElement("h1");
-  title.textContent = "AI Club Coach";
-  const subtitle = document.createElement("p");
-  subtitle.textContent = "Strength + Flow + Breath";
-  header.appendChild(title);
-  header.appendChild(subtitle);
-  return header;
-}
-
-function renderTodayCard(state) {
+function renderQuickSession(state) {
   const section = document.createElement("section");
-  section.className = "section";
-  section.innerHTML = `<h2>Today\'s focus</h2>`;
+  section.className = "section highlight";
+  section.innerHTML = `<h2>Start a session</h2><p>Choose what you have today and let ShaktiFlow balance strength, flow, and breath.</p>`;
 
-  const upcoming = state.generatedSession;
-  if (upcoming) {
-    const title = document.createElement("p");
-    title.innerHTML = `<strong>${upcoming.title}</strong>`;
-    section.appendChild(title);
+  section.appendChild(renderDurationSelector(state));
+  section.appendChild(renderEquipmentSelector(state));
+  section.appendChild(renderFocusSelector(state));
 
-    const list = document.createElement("ul");
-    list.className = "list";
-    upcoming.exercises.slice(0, 4).forEach((item) => {
-      const li = document.createElement("li");
-      li.innerHTML = `<strong>${item.exercise.name}</strong><br/><span>${item.reps}</span><br/><span>${item.cues}</span>`;
-      list.appendChild(li);
-    });
-    section.appendChild(list);
-
-    const meta = document.createElement("p");
-    meta.textContent = `Breathwork ${upcoming.breathMinutes} min • Patterns: ${upcoming.planPatterns.join(", ")}`;
-    section.appendChild(meta);
-
-    const lastGenerated = document.createElement("p");
-    lastGenerated.className = "text-muted";
-    if (state.lastGeneratedAt) {
-      lastGenerated.textContent = `Updated ${formatDateTime(state.lastGeneratedAt)}`;
-      section.appendChild(lastGenerated);
-    }
-  } else {
-    const empty = document.createElement("p");
-    empty.textContent = "No session generated yet. Let\'s build one.";
-    section.appendChild(empty);
-  }
+  const helper = document.createElement("p");
+  helper.className = "text-muted";
+  helper.textContent = "Time of day is detected automatically when you tap Get my workout.";
+  section.appendChild(helper);
 
   const actions = document.createElement("div");
-  actions.style.display = "grid";
-  actions.style.gap = "0.6rem";
-  actions.style.marginTop = "0.8rem";
+  actions.className = "action-row";
 
-  const planButton = document.createElement("button");
-  planButton.textContent = "Plan my session";
-  planButton.addEventListener("click", () => setView("planner"));
+  const startButton = document.createElement("button");
+  startButton.type = "button";
+  startButton.textContent = state.generatedSession ? "Regenerate session" : "Get my workout";
+  startButton.addEventListener("click", () => {
+    const autoTimeOfDay = inferTimeOfDay();
+    const planner = { ...getState().planner, timeOfDay: autoTimeOfDay };
+    const session = generateSession(planner);
+    setGeneratedSession({ ...session, generatedAt: new Date().toISOString(), inputs: planner });
+    updatePlanner({ timeOfDay: autoTimeOfDay });
+  });
+  actions.appendChild(startButton);
 
-  const logButton = document.createElement("button");
-  logButton.textContent = "Log a workout";
-  logButton.className = "secondary";
-  logButton.addEventListener("click", () => setView("log"));
-
-  actions.appendChild(planButton);
-  actions.appendChild(logButton);
+  if (state.generatedSession) {
+    const logButton = document.createElement("button");
+    logButton.type = "button";
+    logButton.className = "secondary";
+    logButton.textContent = "Log this session";
+    logButton.addEventListener("click", () => {
+      const sessionState = getState().generatedSession || state.generatedSession;
+      prepareLogDraft(sessionState);
+      setView("log");
+    });
+    actions.appendChild(logButton);
+  }
 
   section.appendChild(actions);
+
+  section.appendChild(renderSessionPreview(state));
 
   return section;
 }
 
-function renderStreak(state) {
+function renderDurationSelector(state) {
+  const field = document.createElement("div");
+  field.className = "form-field";
+  field.innerHTML = `<label>Time available</label>`;
+
+  const group = document.createElement("div");
+  group.className = "chip-group segmented";
+
+  DURATION_OPTIONS.forEach((minutes) => {
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "chip toggle";
+    chip.textContent = `${minutes} min`;
+    if (state.planner.duration === minutes) chip.classList.add("active");
+    chip.addEventListener("click", () => updatePlanner({ duration: minutes }));
+    group.appendChild(chip);
+  });
+
+  field.appendChild(group);
+  return field;
+}
+
+function renderEquipmentSelector(state) {
+  const field = document.createElement("div");
+  field.className = "form-field";
+  field.innerHTML = `<label>Equipment on hand</label>`;
+
+  const chips = document.createElement("div");
+  chips.className = "chip-group toggle-group";
+
+  equipmentOptions.forEach((option) => {
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "chip toggle";
+    chip.textContent = option.label;
+    chip.title = option.label;
+    if ((state.planner.equipment || []).includes(option.id)) chip.classList.add("active");
+    chip.addEventListener("click", () => toggleMultiSelect("equipment", option.id));
+    chips.appendChild(chip);
+  });
+
+  field.appendChild(chips);
+
+  const actions = document.createElement("div");
+  actions.className = "inline-actions";
+
+  const selectAll = document.createElement("button");
+  selectAll.type = "button";
+  selectAll.className = "ghost";
+  selectAll.textContent = "Select all";
+  selectAll.addEventListener("click", () => updatePlanner({ equipment: equipmentOptions.map((opt) => opt.id) }));
+
+  const clear = document.createElement("button");
+  clear.type = "button";
+  clear.className = "ghost";
+  clear.textContent = "Clear";
+  clear.addEventListener("click", () => updatePlanner({ equipment: [] }));
+
+  actions.appendChild(selectAll);
+  actions.appendChild(clear);
+  field.appendChild(actions);
+
+  return field;
+}
+
+function renderFocusSelector(state) {
+  const field = document.createElement("div");
+  field.className = "form-field";
+  field.innerHTML = `<label>Focus for today</label>`;
+
+  const chips = document.createElement("div");
+  chips.className = "chip-group toggle-group";
+
+  focusOptions.forEach((option) => {
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "chip toggle";
+    chip.textContent = option.label;
+    chip.title = option.description;
+    if ((state.planner.focus || []).includes(option.id)) chip.classList.add("active");
+    chip.addEventListener("click", () => toggleMultiSelect("focus", option.id));
+    chips.appendChild(chip);
+  });
+
+  field.appendChild(chips);
+  return field;
+}
+
+function toggleMultiSelect(key, value) {
+  const current = getState();
+  const existing = new Set(current.planner[key] || []);
+  if (existing.has(value)) existing.delete(value);
+  else existing.add(value);
+  updatePlanner({ [key]: Array.from(existing) });
+}
+
+function renderSessionPreview(state) {
+  const section = document.createElement("div");
+  section.className = "session-preview";
+
+  if (!state.generatedSession) {
+    const placeholder = document.createElement("p");
+    placeholder.className = "text-muted";
+    placeholder.textContent = "No session generated yet. Choose your inputs and tap Get my workout.";
+    section.appendChild(placeholder);
+    return section;
+  }
+
+  const session = state.generatedSession;
+
+  const title = document.createElement("p");
+  title.innerHTML = `<strong>${session.title}</strong>`;
+  section.appendChild(title);
+
+  if (session.planPatterns?.length) {
+    const tags = document.createElement("div");
+    tags.className = "tag-list";
+    session.planPatterns.forEach((pattern) => {
+      const tag = document.createElement("span");
+      tag.className = "tag";
+      tag.textContent = pattern;
+      tags.appendChild(tag);
+    });
+    section.appendChild(tags);
+  }
+
+  if (session.warnings?.length) {
+    session.warnings.forEach((warning) => {
+      const alert = document.createElement("div");
+      alert.className = "inline-alert";
+      alert.textContent = warning;
+      section.appendChild(alert);
+    });
+  }
+
+  const list = document.createElement("ul");
+  list.className = "list rich";
+
+  session.exercises.forEach((item) => {
+    const li = document.createElement("li");
+    li.innerHTML = `<strong>${item.exercise.name}</strong><br/><span>${item.exercise.description || ""}</span>`;
+
+    const prescription = document.createElement("div");
+    prescription.className = "prescription";
+    prescription.textContent = item.reps;
+    li.appendChild(prescription);
+
+    if (item.cues) {
+      const cues = document.createElement("span");
+      cues.className = "text-muted small";
+      cues.textContent = item.cues;
+      li.appendChild(cues);
+    }
+
+    list.appendChild(li);
+  });
+
+  section.appendChild(list);
+
+  if (session.breath?.length) {
+    const breath = document.createElement("div");
+    breath.className = "breath-list";
+    const heading = document.createElement("h3");
+    heading.textContent = `Breathwork ${session.breathMinutes} min`;
+    breath.appendChild(heading);
+
+    const breathUl = document.createElement("ul");
+    breathUl.className = "list";
+    session.breath.forEach((item) => {
+      const li = document.createElement("li");
+      li.innerHTML = `<strong>${item.label}</strong> — ${item.how || item.effect}`;
+      breathUl.appendChild(li);
+    });
+    breath.appendChild(breathUl);
+    section.appendChild(breath);
+  }
+
+  if (state.lastGeneratedAt) {
+    const meta = document.createElement("p");
+    meta.className = "text-muted small";
+    meta.textContent = `Updated ${formatDateTime(state.lastGeneratedAt)}`;
+    section.appendChild(meta);
+  }
+
+  return section;
+}
+
+function renderMomentum(state) {
   const section = document.createElement("section");
   section.className = "section";
   section.innerHTML = `<h2>Momentum</h2>`;
 
   const streak = computeStreak(state.logs);
-  const cardGrid = document.createElement("div");
-  cardGrid.className = "metric-grid";
-
-  cardGrid.appendChild(createMetric("Streak", `${streak} day${streak === 1 ? "" : "s"}`));
-  cardGrid.appendChild(createMetric("Sessions this week", `${countSessionsThisWeek(state.logs)}`));
-  cardGrid.appendChild(createMetric("Avg RPE", formatRPE(state.logs)));
-
-  section.appendChild(cardGrid);
+  const grid = document.createElement("div");
+  grid.className = "metric-grid";
+  grid.appendChild(createMetric("Streak", `${streak} day${streak === 1 ? "" : "s"}`));
+  grid.appendChild(createMetric("Sessions this week", `${countSessionsThisWeek(state.logs)}`));
+  grid.appendChild(createMetric("Avg RPE", formatRPE(state.logs)));
+  section.appendChild(grid);
 
   if (state.logs.length) {
     const latest = state.logs[0];
     const recent = document.createElement("div");
-    recent.style.marginTop = "0.8rem";
-    recent.innerHTML = `<strong>Last session:</strong> ${latest.title || latest.blueprint || "Custom"} · ${formatDateTime(latest.date || latest.createdAt)}`;
+    recent.className = "text-muted small";
+    recent.textContent = `Last session: ${formatDateTime(latest.date || latest.createdAt)}`;
     section.appendChild(recent);
   }
 
@@ -173,4 +339,11 @@ function formatRPE(logs) {
   if (!entries.length) return "—";
   const value = entries.reduce((sum, log) => sum + log.rpe, 0) / entries.length;
   return value.toFixed(1);
+}
+
+function inferTimeOfDay() {
+  const hour = new Date().getHours();
+  if (hour < 12) return "morning";
+  if (hour < 17) return "midday";
+  return "evening";
 }

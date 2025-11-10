@@ -1,11 +1,10 @@
 import { setView } from "../state.js";
 
 const NAV_ITEMS = [
-  { id: "home", label: "Home", icon: "🏠" },
-  { id: "planner", label: "Planner", icon: "🧭" },
+  { id: "home", label: "Home", icon: "⚡" },
   { id: "log", label: "Log", icon: "✍️" },
   { id: "insights", label: "Insights", icon: "📈" },
-  { id: "knowledge", label: "Knowledge", icon: "📚" }
+  { id: "knowledge", label: "Library", icon: "📚" }
 ];
 
 export function renderNavigation(active) {

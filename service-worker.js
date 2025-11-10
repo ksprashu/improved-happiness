@@ -1,4 +1,4 @@
-const CACHE_NAME = "club-coach-cache-v1";
+const CACHE_NAME = "shaktiflow-cache-v1";
 const ASSETS = [
   "/",
   "/index.html",
@@ -10,11 +10,11 @@ const ASSETS = [
   "/src/utils/storage.js",
   "/src/utils/planner.js",
   "/src/views/home.js",
-  "/src/views/planner.js",
   "/src/views/log.js",
   "/src/views/insights.js",
   "/src/views/knowledge.js",
   "/src/components/navigation.js",
+  "/src/components/topbar.js",
   "/src/data/knowledgeBase.js",
   "/src/data/samplePlan.js",
   "/icons/icon-192.svg",

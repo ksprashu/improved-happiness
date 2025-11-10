@@ -4,25 +4,29 @@ import { formatDate, formatDateTime } from "../utils/date.js";
 import { generateSession } from "../utils/planner.js";
 
 export function renderInsights(state) {
-  const container = document.createElement("div");
-  container.appendChild(createHeader());
+  const fragment = document.createDocumentFragment();
 
-  const main = document.createElement("div");
-  main.className = "main-content";
+  fragment.appendChild(renderSummary(state));
+  fragment.appendChild(renderWeeklyBalance(state));
+  fragment.appendChild(renderRecovery(state));
+  fragment.appendChild(renderNextSuggestion(state));
 
-  main.appendChild(renderWeeklyBalance(state));
-  main.appendChild(renderRecovery(state));
-  main.appendChild(renderNextSuggestion(state));
-
-  container.appendChild(main);
-  return container;
+  return fragment;
 }
 
-function createHeader() {
-  const header = document.createElement("header");
-  header.className = "app-header";
-  header.innerHTML = `<h1>Insights & recovery</h1><p>Stay ahead of fatigue and keep patterns balanced.</p>`;
-  return header;
+function renderSummary(state) {
+  const section = document.createElement("section");
+  section.className = "section highlight";
+  section.innerHTML = `<h2>Your training compass</h2><p>See how your flow, strength, and breath work are trending.</p>`;
+
+  const grid = document.createElement("div");
+  grid.className = "metric-grid";
+  grid.appendChild(createMetric("Logged sessions", `${state.logs.length}`));
+  grid.appendChild(createMetric("Current streak", `${computeStreak(state.logs)} days`));
+  grid.appendChild(createMetric("Avg RPE", formatAverageRPE(state)));
+  section.appendChild(grid);
+
+  return section;
 }
 
 function renderWeeklyBalance(state) {
@@ -168,4 +172,9 @@ function findOverusedPattern(state) {
   const overused = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
   if (!overused) return null;
   return overused[1] >= 3 ? overused[0] : null;
+}
+
+function formatAverageRPE(state) {
+  const avg = getAverageRPE(state.logs);
+  return avg ? avg.toFixed(1) : "—";
 }

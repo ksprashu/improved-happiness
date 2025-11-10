@@ -7,7 +7,8 @@ const defaultPlanner = {
   equipment: equipmentOptions.map((opt) => (opt.id === "bodyweight" || opt.id === "yoga" ? opt.id : null)).filter(Boolean),
   goals: [goals[0].id, goals[1].id],
   readiness: readinessLevels[1].id,
-  soreness: []
+  soreness: [],
+  focus: []
 };
 
 let state = null;
@@ -22,7 +23,8 @@ function createInitialState() {
     preferences: {
       installPromptDismissed: false
     },
-    lastGeneratedAt: null
+    lastGeneratedAt: null,
+    logDraft: null
   };
 }
 
@@ -31,6 +33,8 @@ function ensureStateLoaded() {
     const saved = loadState();
     state = saved ? { ...createInitialState(), ...saved } : createInitialState();
     if (!state.planner) state.planner = { ...defaultPlanner };
+    if (!Array.isArray(state.planner.focus)) state.planner.focus = [];
+    if (typeof state.logDraft === "undefined") state.logDraft = null;
   }
 }
 
@@ -60,6 +64,7 @@ export function setView(view) {
 export function updatePlanner(partial) {
   ensureStateLoaded();
   state.planner = { ...state.planner, ...partial };
+  if (!Array.isArray(state.planner.focus)) state.planner.focus = [];
   notify();
 }
 
@@ -78,6 +83,7 @@ export function addLog(entry) {
     ...entry
   };
   state.logs = [log, ...state.logs];
+  state.logDraft = null;
   notify();
   return log;
 }
@@ -96,6 +102,31 @@ export function deleteLog(id) {
 
 export function clearAll() {
   state = createInitialState();
+  notify();
+}
+
+export function prepareLogDraft(session = null) {
+  ensureStateLoaded();
+  if (!session) {
+    state.logDraft = null;
+    notify();
+    return;
+  }
+
+  const plannerSnapshot = session.inputs || state.planner;
+  state.logDraft = {
+    title: session.title,
+    blueprint: session.blueprint,
+    duration: plannerSnapshot?.duration || state.planner.duration,
+    patterns: session.planPatterns || [],
+    exercises: session.exercises.map((item) => ({
+      name: item.exercise.name,
+      prescription: item.reps,
+      cues: item.cues,
+      tool: item.exercise.tool
+    })),
+    breathMinutes: session.breathMinutes || 0
+  };
   notify();
 }
 

@@ -1,7 +1,7 @@
 import { subscribe, getState, setView } from "./state.js";
 import { renderNavigation } from "./components/navigation.js";
+import { renderTopBar } from "./components/topbar.js";
 import { renderHome } from "./views/home.js";
-import { renderPlanner } from "./views/planner.js";
 import { renderLog } from "./views/log.js";
 import { renderInsights } from "./views/insights.js";
 import { renderKnowledge } from "./views/knowledge.js";
@@ -13,9 +13,6 @@ function render(state) {
 
   let view;
   switch (state.view) {
-    case "planner":
-      view = renderPlanner(state);
-      break;
     case "log":
       view = renderLog(state);
       break;
@@ -30,8 +27,19 @@ function render(state) {
       view = renderHome(state);
   }
 
-  root.appendChild(view);
-  root.appendChild(renderNavigation(state.view));
+  const shell = document.createElement("div");
+  shell.className = "app-shell";
+
+  shell.appendChild(renderTopBar(state));
+
+  const main = document.createElement("main");
+  main.className = "main-content";
+  main.appendChild(view);
+
+  shell.appendChild(main);
+  shell.appendChild(renderNavigation(state.view));
+
+  root.appendChild(shell);
 }
 
 subscribe(render);
@@ -47,7 +55,7 @@ window.addEventListener("load", () => {
 window.addEventListener("keydown", (event) => {
   if (event.altKey && event.key === "ArrowLeft") {
     event.preventDefault();
-    const order = ["home", "planner", "log", "insights", "knowledge"];
+    const order = ["home", "log", "insights", "knowledge"];
     const state = getState();
     const idx = order.indexOf(state.view);
     const next = order[(idx - 1 + order.length) % order.length];
@@ -55,7 +63,7 @@ window.addEventListener("keydown", (event) => {
   }
   if (event.altKey && event.key === "ArrowRight") {
     event.preventDefault();
-    const order = ["home", "planner", "log", "insights", "knowledge"];
+    const order = ["home", "log", "insights", "knowledge"];
     const state = getState();
     const idx = order.indexOf(state.view);
     const next = order[(idx + 1) % order.length];

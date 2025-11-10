@@ -1,14 +1,14 @@
-# AI Club Coach
+# ShaktiFlow
 
-A mobile-first progressive web app that fuses Indian club training, kettlebell strength, yoga, and breathwork into a personalised training experience. The app generates daily sessions, helps you log strength and flow work, and highlights recovery signals so you can train with consistency.
+ShaktiFlow is a mobile-first progressive web app for Indian club, kettlebell, yoga, and breathwork practice. It quickly builds sessions around the time, tools, and focus you have on hand, keeps your logs tight to each plan, and surfaces the recovery insights you need to stay consistent.
 
 ## 🚀 Features
 
-- **Dynamic Planner** – Input time, duration, equipment, energy, and soreness to get a balanced session with warm-up, main work, and breathwork. Planner respects recent workload to avoid overtraining specific patterns.
-- **Training Log** – Capture movement patterns, exercise prescriptions, load notes, RPE, and reflections. Offline-first local storage keeps data on-device.
-- **Insights Dashboard** – Visualise weekly pattern coverage, average RPE, streaks, and recovery advisories, with a suggested next session.
-- **Knowledge Base** – Explore ethos pillars, equipment ecosystem, movement library with filters, breath modules, and the dynamic day-picker plan.
-- **PWA Ready** – Installable on mobile with offline caching via a service worker and custom iconography.
+- **Quick Session Builder** – Set the minutes available, tap the equipment and focus themes (gada, mudgar, kettlebells, yoga, bodyweight), and ShaktiFlow auto-generates a balanced session with descriptions and breathwork.
+- **Integrated Log** – Prefill your session into a structured log so you can capture sets, reps, loads, RPE, and notes without retyping the plan.
+- **Topbar Compass & Insights** – A persistent status bar surfaces your streak, last log, and active focus while the Insights view tracks pattern balance, recovery cues, and the next session preview.
+- **Knowledge Base Refresh** – Each movement and breath module now ships with how-to blurbs, focus themes, and quick filters to reinforce technique.
+- **Offline-first PWA** – Install on mobile with manifest metadata, service worker caching, and responsive styling tuned for touch.
 
 ## 🧭 Project Structure
 
@@ -38,7 +38,7 @@ Then open [http://localhost:5173](http://localhost:5173) in your browser. The se
 
 ## 🧠 Data & Persistence
 
-- All user data (planner inputs, generated sessions, logs) lives in `localStorage` under the key `ai-club-coach-state-v1`.
+- All user data (planner inputs, generated sessions, logs) lives in `localStorage` under the key `shaktiflow-state-v1`.
 - Planner logic consults the structured knowledge base in `src/data/knowledgeBase.js` and honours the functional requirements defined in `docs/function_requirements.md`.
 
 ## 📲 Installing the PWA

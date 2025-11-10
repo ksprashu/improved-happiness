@@ -1,7 +1,7 @@
 {
-  "name": "AI Club Coach",
-  "short_name": "Club Coach",
-  "description": "Dynamic Indian club strength planner with logging and recovery insights.",
+  "name": "ShaktiFlow",
+  "short_name": "ShaktiFlow",
+  "description": "ShaktiFlow keeps your strength, flow, and breath training in sync across sessions.",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#05140f",
